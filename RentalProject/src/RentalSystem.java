@@ -1,7 +1,11 @@
 import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -17,7 +21,10 @@ public class RentalSystem {
     public static RentalSystem getInstance()
     {
     	if (instance == null)
+    	{
     		instance = new RentalSystem();
+    		instance.loadData();
+    	}
     		
     	return instance;
     }
@@ -83,6 +90,176 @@ public class RentalSystem {
 			e.printStackTrace();
 		}
     }
+    
+    // Loads data from vehicles.txt, customers.txt & rental_records.txt
+    public void loadData()
+    {
+    	// Loads vehicles from vehicles.txt
+    	try {
+    		// Creates a BufferedReader object
+			BufferedReader reader = new BufferedReader(new FileReader("vehicles.txt"));
+			
+			// Parses through each line in vehicles.txt, each line representing a different Vehicle object
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				// Splits the line into individual words
+				String[] words = line.split("[|]");
+				// Variable that will hold newly created vehicle objects from vehicles.txt
+				Vehicle newVehicle;
+				
+				// Removes all spaces from all words
+				for (int i = 0; i < words.length; i++)
+					words[i] = words[i].replaceAll("\\s", "");
+				
+				// Using the 1st word in words, representing the vehicle type, creates a new vehicle of that type & then adds it to vehicles
+				switch (words[0]) {
+					case "Car":
+						// Properly formats the number of seats to an integer
+						int newNumSeats = Integer.parseInt(words[6].replaceAll("[^\\d]", ""));
+						// Creates the car
+						newVehicle = new Car(words[2], words[3], Integer.parseInt(words[4].replaceAll("[^\\d]", "")), newNumSeats);
+						
+						//Sets license plate & status, properly formatting status, then adds it to vehicles
+						newVehicle.setLicensePlate(words[1]);
+						newVehicle.setStatus(Vehicle.VehicleStatus.valueOf(words[5]));
+						vehicles.add(newVehicle);
+						break;
+						
+					case "Motorcycle":
+						// Properly formats if the motorcycle has a side car to a boolean
+						boolean newHasSideCar;
+						if (words[6].equals("Sidecar:Yes"))
+							newHasSideCar = true;
+						else
+							newHasSideCar = false;
+						// Creates the motorcycle
+						newVehicle = new Motorcycle(words[2], words[3], Integer.parseInt(words[4].replaceAll("[^\\d]", "")), newHasSideCar);
+
+						//Sets license plate & status, properly formatting status, then adds it to vehicles
+						newVehicle.setLicensePlate(words[1]);
+						newVehicle.setStatus(Vehicle.VehicleStatus.valueOf(words[5]));
+						vehicles.add(newVehicle);
+						break;
+						
+					case "Truck":
+						// Properly formats the cargoCapacity of seats to a double
+						double newCargoCapacity = Double.parseDouble(words[6].replaceAll("[^\\d\\.]", ""));
+						// Creates the truck
+						newVehicle = new Truck(words[2], words[3], Integer.parseInt(words[4].replaceAll("[^\\d]", "")), newCargoCapacity);
+
+						//Sets license plate & status, properly formatting status, then adds it to vehicles
+						newVehicle.setLicensePlate(words[1]);
+						newVehicle.setStatus(Vehicle.VehicleStatus.valueOf(words[5]));
+						vehicles.add(newVehicle);
+						break;
+						
+					case "SportCar":
+						// Properly formats the number of seats to an integer
+						newNumSeats = Integer.parseInt(words[6].replaceAll("[^\\d]", ""));
+						// Properly formats the horsepower to an integer
+						int newHorsePower = Integer.parseInt(words[7].replaceAll("[^\\d]", ""));
+						// Properly formats if the sport car has turbo to a boolean
+						boolean newHasTurbo;
+						if (words[8].equals("Turbo:Yes"))
+							newHasTurbo = true;
+						else
+							newHasTurbo = false;
+						// Creates the sport car
+						newVehicle = new SportCar(words[2], words[3], Integer.parseInt(words[4].replaceAll("[^\\d]", "")), newNumSeats, newHorsePower, newHasTurbo);
+
+						//Sets license plate & status, properly formatting status, then adds it to vehicles
+						newVehicle.setLicensePlate(words[1]);
+						newVehicle.setStatus(Vehicle.VehicleStatus.valueOf(words[5]));
+						vehicles.add(newVehicle);
+						break;
+				}
+			}
+				
+			// Closes the reader
+			reader.close();
+		} catch (FileNotFoundException e) {
+			// Creates the missing file
+			new File("vehicles.txt");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	// Loads customers from customers.txt
+    	try {
+    		// Creates a BufferedReader object
+			BufferedReader reader = new BufferedReader(new FileReader("customers.txt"));
+			
+			// Parses through each line in customers.txt, each line representing a different customer object
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				// Splits the line into individual words
+				String[] words = line.split("[|]");
+				
+				// Removes any instances of " Name: " from all words
+				for (int i = 0; i < words.length; i++)
+					words[i] = words[i].replaceAll(" Name: ", "");
+				
+				// Creates a new customer object, properly formatting all arguments & adds it to customers
+				Customer newCustomer = new Customer(Integer.parseInt(words[0].replaceAll("[^\\d]", "")), words[1]);
+				customers.add(newCustomer);
+			}
+
+			// Closes the reader
+			reader.close();
+		} catch (FileNotFoundException e) {
+			// Creates the missing file
+			new File("customers.txt");
+		}  catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	// Loads rental records from rental_records.txt
+    	try {
+    		// Creates a BufferedReader object
+			BufferedReader reader = new BufferedReader(new FileReader("rental_records.txt"));
+			
+			// Parses through each line in rental_records.txt, each line representing a different rentalRecord object
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				// Splits the line into individual words
+				String[] words = line.split("[|]");
+				
+				// Removes labels for some of the stored values in the line
+				for (int i = 0; i < words.length; i++)
+				{
+					words[i] = words[i].replaceAll("\\s", "");
+					words[i] = words[i].replaceAll("Plate:", "");
+					words[i] = words[i].replaceAll("Customer:", "");
+					words[i] = words[i].replaceAll("Date:", "");
+				}
+				
+				// Properly formats the argument's for RentalRecord's constructor as needed
+				Vehicle newVehicle = findVehicleByPlate(words[1]);
+				Customer newCustomer = findCustomerByName(words[2]);
+				LocalDate newDate = LocalDate.parse(words[3]);
+				double newAmount = Double.parseDouble(words[4].replaceAll("[^\\d\\.]", ""));
+
+				// Creates a new RentalRecord object & adds it to rentalHistory
+				RentalRecord newRecord = new RentalRecord(newVehicle, newCustomer, newDate, newAmount, words[0]);
+				rentalHistory.addRecord(newRecord);
+			}
+
+			// Closes the reader
+			reader.close();
+		} catch (FileNotFoundException e) {
+			// Creates the missing file
+			new File("rental_records.txt");
+		}  catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
     
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
