@@ -6,7 +6,18 @@ public class RentalSystem {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Customer> customers = new ArrayList<>();
     private RentalHistory rentalHistory = new RentalHistory();
+    
+    // Singleton instance of this class
+    private static RentalSystem instance;
 
+    // Returns the singleton instance of this class, if instance hasn't been set yet, do so
+    public static RentalSystem getInstance()
+    {
+    	if (instance == null)
+    		instance = new RentalSystem();
+    	return instance;
+    }
+    
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
     }
