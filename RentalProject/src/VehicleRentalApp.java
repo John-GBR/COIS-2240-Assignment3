@@ -7,7 +7,7 @@ public class VehicleRentalApp {
         
         // Creates a variable that references the RentalSystem instance
         RentalSystem rentalSystem = RentalSystem.getInstance();
-
+        
         while (true) {
         	System.out.println("1: Add Vehicle\n2: Add Customer\n3: Rent Vehicle\n4: Return Vehicle\n5: Display Available Vehicles\n6: Show Rental History\n7: Exit");
             int choice = scanner.nextInt();
@@ -60,11 +60,18 @@ public class VehicleRentalApp {
                     break;
 
                 case 2:
+                	// Gets the customer ID from the user
                     System.out.print("Enter customer ID: ");
                     int cid = scanner.nextInt();
+                    
+                    // "Eats" the newline character from entering the integer in the last step to prevent cname being recorded as just a newline char
+                    scanner.nextLine();
+                    
+                    // Gets the customer name from the user
                     System.out.print("Enter name: ");
                     String cname = scanner.nextLine();
 
+                    // Creates the new customer with the user entered values
                     rentalSystem.addCustomer(new Customer(cid, cname));
                     System.out.println("Customer added.");
                     break;
@@ -134,9 +141,14 @@ public class VehicleRentalApp {
                     rentalSystem.displayRentalHistory();
                     break;
                     
-                case 0:
+                case 7:
                 	scanner.close();
                     System.exit(0);
+                
+                // Default case for when any invalid character is entered
+    			default:
+    				System.out.println("**ERROR** Invalid option input.");
+    				break;
             }
         }
     }
