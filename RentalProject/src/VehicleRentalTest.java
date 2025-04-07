@@ -1,5 +1,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 class VehicleRentalTest {
@@ -23,6 +25,43 @@ class VehicleRentalTest {
 		assertThrows(IllegalArgumentException.class, () -> v1.setLicensePlate(null));
 		assertThrows(IllegalArgumentException.class, () -> v1.setLicensePlate("AAA1000"));
 		assertThrows(IllegalArgumentException.class, () -> v1.setLicensePlate("ZZZ99"));
+	}
+	
+	// 
+	@Test
+	void testRentAndReturnVehicle() {
+		// Create a new vehicle & customer objects, setting the vehicle's plate
+		Vehicle v1 = new Car("Honda", "Civic", 2019, 5);
+		v1.setLicensePlate("MAN237");
+		Customer c1 = new Customer(004, "Manny");
+		
+		// Tests that the vehicle is initially Available
+		assertTrue(v1.getStatus() == Vehicle.VehicleStatus.AVAILABLE);
+		
+		// Gets the single rentalSystem instance
+        RentalSystem rentalSys = RentalSystem.getInstance();
+        
+        // Adds the v1 & c1 to the rentalSystem
+        rentalSys.addVehicle(v1);
+        rentalSys.addCustomer(c1);
+        
+        // Tests that the vehicle can be successfully rented
+        assertTrue(rentalSys.rentVehicle(v1, c1, LocalDate.now(), 0));
+        
+        // Tests to see that the vehicle is now Rented
+        assertTrue(v1.getStatus() == Vehicle.VehicleStatus.RENTED);
+        
+        // Tests to see that v1 now cannot be rented since it's already rented
+        assertFalse(rentalSys.rentVehicle(v1, c1, LocalDate.now(), 0));
+        
+        // Tests that the vehicle can be successfully returned
+        assertTrue(rentalSys.returnVehicle(v1, c1, LocalDate.now(), 0));
+        
+        // Tests to see that the vehicle is now Available
+        assertTrue(v1.getStatus() == Vehicle.VehicleStatus.AVAILABLE);
+
+        // Tests to see that v1 now cannot be returned since it's already returned
+        assertFalse(rentalSys.returnVehicle(v1, c1, LocalDate.now(), 0));
 	}
 	
 	
