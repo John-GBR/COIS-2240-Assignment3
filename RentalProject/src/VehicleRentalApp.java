@@ -50,7 +50,14 @@ public class VehicleRentalApp {
 		            }
                     
                     if (vehicle != null){
-	                    vehicle.setLicensePlate(plate);
+                    	
+                    	// Attempts to set the vehicle's license plate, else print the exception's message
+                    	try {
+                    		vehicle.setLicensePlate(plate);
+                    	}
+	                    catch (IllegalArgumentException e) {
+	                    	System.out.print(e.getMessage());
+                    	}
 	                    rentalSystem.addVehicle(vehicle);
 	                    System.out.print("Vehicle added.");
                     }

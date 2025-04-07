@@ -35,8 +35,13 @@ public abstract class Vehicle {
         this(null, null, 0);
     }
 
+    // Setter for license plate
     public void setLicensePlate(String plate) {
-        this.licensePlate = plate == null ? null : plate.toUpperCase();
+    	// Sets the license plate if the given string is valid, else throw an IllegalArgumentException
+    	if (isValidPlate(plate))
+    		this.licensePlate = plate == null ? null : plate.toUpperCase();
+    	else
+    		throw new IllegalArgumentException("Invalid license plate. Must be 3 letetrs followed by 3 numbers.");
     }
 
     public void setStatus(VehicleStatus status) {
@@ -55,5 +60,15 @@ public abstract class Vehicle {
 
     public String getInfo() {
         return "| " + licensePlate + " | " + make + " | " + model + " | " + year + " | " + status;
+    }
+    
+    // Returns true if the given string has 3 letters at the beginning, immediately followed by 3 numbers, else return false
+    private boolean isValidPlate(String plate)
+    {
+    	if (plate != null && plate != "" && plate.length() == 6 && !plate.substring(0, 2).matches(".*\\d.*")
+    				&& plate.substring(3, 5).matches(".*\\d.*"))
+    		return true;
+    	else
+    		return false;
     }
 }
