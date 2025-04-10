@@ -17,6 +17,9 @@ public class RentalSystem {
     // Singleton instance of this class
     private static RentalSystem instance;
 
+    // Private constructor
+    private RentalSystem() {}
+    
     // Returns the singleton instance of this class, if instance hasn't been set yet, do so
     public static RentalSystem getInstance()
     {

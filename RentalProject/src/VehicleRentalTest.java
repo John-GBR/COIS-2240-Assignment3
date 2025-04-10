@@ -1,8 +1,9 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
-
 import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 class VehicleRentalTest {
 	
@@ -27,7 +28,7 @@ class VehicleRentalTest {
 		assertThrows(IllegalArgumentException.class, () -> v1.setLicensePlate("ZZZ99"));
 	}
 	
-	// 
+	// Tests that renting & returning vehicles functions properly
 	@Test
 	void testRentAndReturnVehicle() {
 		// Create a new vehicle & customer objects, setting the vehicle's plate
@@ -60,10 +61,30 @@ class VehicleRentalTest {
         // Tests to see that the vehicle is now Available
         assertTrue(v1.getStatus() == Vehicle.VehicleStatus.AVAILABLE);
 
-        // Tests to see that v1 now cannot be returned since it's already returned
+        // Tests to see that v1 now cannot be returned since it's already been returned
         assertFalse(rentalSys.returnVehicle(v1, c1, LocalDate.now(), 0));
 	}
 	
+	
+	// Tests that the RentalSystem class enforces Singleton behavior
+	@Test
+	void testSingletonRentalSystem() {
+		try {
+			// Gets the RentalSystem's constructor & tests that it's private
+			Constructor<RentalSystem> constructor = RentalSystem.class.getDeclaredConstructor();
+			assertEquals(constructor.getModifiers(), Modifier.PRIVATE);
+			
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// Verifies that getInstance doesn't return null
+		assertFalse(RentalSystem.getInstance() == null);
+	}
 	
 }
 
